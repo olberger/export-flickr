@@ -19,22 +19,27 @@ def fetch(api_key, api_secret):
   # create an unauthenticated flickrapi object
   flickr=flickrapi.FlickrAPI(api_key, api_secret)
 
-  print "Open the following URL in your browser "
-  print "This Url >>>> %s" % flickr.web_login_url(perms='read')
+  # Try to reuse token cached by flickrapi
+  (token, frob) = flickr.get_token_part_one('read')
+  if not token:
 
-  print "When you're ready press ENTER",
-  raw_input()
+    # Then redo the authentication scenario
+    print "Open the following URL in your browser "
+    print "This Url >>>> %s" % flickr.web_login_url(perms='read')
 
-  print "Copy and paste the URL (from theopenphotoproject.org) here: ",
-  frob_url = raw_input()
+    print "When you're ready press ENTER",
+    raw_input()
 
-  print "\nThanks!"
+    print "Copy and paste the URL (from theopenphotoproject.org) here: ",
+    frob_url = raw_input()
 
-  print "Parsing URL for the token...",
-  match = re.search('frob=([^&]+)', frob_url)
-  frob = match.group(1)
-  token = flickr.get_token(frob)
-  print "OK"
+    print "\nThanks!"
+
+    print "Parsing URL for the token...",
+    match = re.search('frob=([^&]+)', frob_url)
+    frob = match.group(1)
+    token = flickr.get_token(frob)
+    print "OK"
 
   # create an authenticated flickrapi object
   flickr = flickrapi.FlickrAPI(api_key, api_secret, token=token)
